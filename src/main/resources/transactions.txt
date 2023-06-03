@@ -1,0 +1,14 @@
+apples|buy|222.30
+apples|sell|100.00
+fridge|buy|24.22
+metal container|sell|15.00
+shoes|sell|20.00
+dress|buy|75.00
+dress|sell|45.00
+electric car|buy|3.00
+electric car|sell|1.00
+Samsung Phone|sell|18.00
+Apple Phone|sell|23.00
+man shirt|buy|17.00
+leather wallet|sell|30.00
+candies|buy|956.75
