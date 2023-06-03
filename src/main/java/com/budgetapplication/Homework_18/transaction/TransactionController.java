@@ -27,7 +27,8 @@ public class TransactionController {
     }
 
     //GET transactions, filter by product
-    @GetMapping("/filter") //exemplu:localhost:8080/transactions/filter?product=dress&type=sell&minAmount=1&maxAmount=100
+    @GetMapping("/filter")
+    //exemplu:localhost:8080/transactions/filter?product=dress&type=sell&minAmount=1&maxAmount=100
     public List<Transaction> filterByProductAndType(@RequestParam String product,
                                                     @RequestParam String type,
                                                     @RequestParam Long minAmount,

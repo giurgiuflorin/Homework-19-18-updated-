@@ -16,10 +16,6 @@ public class TransactionManager {
     Transaction transaction;
     private final List<Transaction> transactionList = new ArrayList<>();
 
-//    public TransactionManager() throws FileNotFoundException {
-//        addingTransactionsToList();
-//    }
-
 
     @PostConstruct
     private void addingTransactionsToList() throws FileNotFoundException {
@@ -29,13 +25,13 @@ public class TransactionManager {
         while (scanner.hasNext()) {
             String transaction = scanner.nextLine();
             String[] tokens = transaction.split(Pattern.quote("|"));
-           Transaction tran = Transaction.builder()
+            Transaction tran = Transaction.builder()
                     .id(id++)
                     .product(tokens[0])
                     .transactionType(TransactionType.valueOf(tokens[1].toUpperCase()))
                     .amount(Double.parseDouble(tokens[2]))
                     .build();
-           transactionList.add(tran);
+            transactionList.add(tran);
 
         }
     }
@@ -63,17 +59,14 @@ public class TransactionManager {
                 .filter(transaction1 -> transaction1.getAmount() >= minAmount)
                 .toList();
 
-        }
-
-
-
+    }
 
 
     public Transaction getTransactionById(long id) {
-         return getAllTransactions().stream()
+        return getAllTransactions().stream()
                 .filter(transaction -> transaction.getId() == id)
                 .findFirst()
-                 .orElse(null);
+                .orElse(null);
 
     }
 
@@ -93,7 +86,7 @@ public class TransactionManager {
             newId = (long) transactionList.get(transactionList.size() - 1).getId() + 1;
             System.out.println("Your given id [" + transaction.getId() + "] has been updated to - " + newId);
         }
-       transaction = Transaction.builder()
+        transaction = Transaction.builder()
                 .id(newId)
                 .product(transaction.getProduct())
                 .transactionType(transaction.getTransactionType())
@@ -108,15 +101,15 @@ public class TransactionManager {
 
         Transaction existingTransaction = getTransactionById(id);
         transactionList.remove(existingTransaction);
-         transaction = Transaction.builder()
-                 // se pastreaza ID-ul tranzactiei sterse, restul field-urilor
-                 // putand fi modificate
-                 .id(id)
-                 .product(transaction.getProduct())
-                 .transactionType(transaction.getTransactionType())
-                 .amount(transaction.getAmount())
-                 .build();
-         transactionList.add(transaction);
+        transaction = Transaction.builder()
+                // se pastreaza ID-ul tranzactiei sterse, restul field-urilor
+                // putand fi modificate
+                .id(id)
+                .product(transaction.getProduct())
+                .transactionType(transaction.getTransactionType())
+                .amount(transaction.getAmount())
+                .build();
+        transactionList.add(transaction);
         return transaction;
     }
 
