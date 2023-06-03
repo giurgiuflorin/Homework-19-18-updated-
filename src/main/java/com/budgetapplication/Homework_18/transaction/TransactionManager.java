@@ -56,15 +56,12 @@ public class TransactionManager {
             return filteredWithMaxAmount;
         }
 
-        List<Transaction> filteredListWithoutMaxAmount = getAllTransactions().stream()
-                .filter(transaction -> transaction.getProduct().equalsIgnoreCase(product))
-                .filter(transaction -> transaction.getTransactionType().equals(TransactionType.valueOf(type.toUpperCase())))
-                .filter(transaction -> transaction.getAmount() >= minAmount)
+
+        return getAllTransactions().stream()
+                .filter(transaction1 -> transaction1.getProduct().equalsIgnoreCase(product))
+                .filter(transaction1 -> transaction1.getTransactionType().equals(TransactionType.valueOf(type.toUpperCase())))
+                .filter(transaction1 -> transaction1.getAmount() >= minAmount)
                 .toList();
-
-
-
-        return filteredListWithoutMaxAmount;
 
         }
 
