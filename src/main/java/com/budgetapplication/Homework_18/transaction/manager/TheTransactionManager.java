@@ -1,20 +1,27 @@
-package com.budgetapplication.Homework_18.transaction;
+package com.budgetapplication.Homework_18.transaction.manager;
 
+import com.budgetapplication.Homework_18.transaction.model.Transaction;
+import com.budgetapplication.Homework_18.transaction.model.TransactionRepository;
+import com.budgetapplication.Homework_18.transaction.model.TransactionType;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
 import java.util.regex.Pattern;
 
-@RequiredArgsConstructor
-@Component
-public class TransactionManager {
+@Service
+@AllArgsConstructor
+public class TheTransactionManager {
 
-    Transaction transaction;
-    private final List<Transaction> transactionList = new ArrayList<>();
+//    private final Transaction transaction;
+
+    private TransactionRepository transactionRepository;
+
+
+//    private List<Transaction> transactionList = new ArrayList<>();
 
 
     @PostConstruct
@@ -31,25 +38,24 @@ public class TransactionManager {
                     .transactionType(TransactionType.valueOf(tokens[1].toUpperCase()))
                     .amount(Double.parseDouble(tokens[2]))
                     .build();
-            transactionList.add(tran);
+            transactionRepository.save(tran);
 
         }
     }
 
 
     public List<Transaction> getAllTransactions() {
-        return transactionList;
+        return (List<Transaction>) transactionRepository.findAll();
     }
 
     public List<Transaction> filterByParameter(String product, String type, Long minAmount, Long maxAmount) {
         if (maxAmount != null) {
-            List<Transaction> filteredWithMaxAmount = getAllTransactions().stream()
-                    .filter(transaction -> transaction.getProduct().equalsIgnoreCase(product))
-                    .filter(transaction -> transaction.getTransactionType().equals(TransactionType.valueOf(type.toUpperCase())))
-                    .filter(transaction -> transaction.getAmount() >= minAmount)
-                    .filter(transaction -> transaction.getAmount() <= maxAmount)
+            return getAllTransactions().stream()
+                    .filter(transaction1 -> transaction1.getProduct().equalsIgnoreCase(product))
+                    .filter(transaction1 -> transaction1.getTransactionType().equals(TransactionType.valueOf(type.toUpperCase())))
+                    .filter(transaction1 -> transaction1.getAmount() >= minAmount)
+                    .filter(transaction1 -> transaction1.getAmount() <= maxAmount)
                     .toList();
-            return filteredWithMaxAmount;
         }
 
 
@@ -72,27 +78,27 @@ public class TransactionManager {
 
     public Transaction addNewTransaction(Transaction transaction) {
 
-        // metoda se asigura ca nu exista doua ID-uri identice in lista
-        long newId = transaction.getId();
-        boolean idPresentInList = false;
+//        // metoda se asigura ca nu exista doua ID-uri identice in lista
+//        long newId = transaction.getId();
+//        boolean idPresentInList = false;
 
-        for (Transaction t : transactionList) {
-            if (t.getId() == transaction.getId()) {
-                idPresentInList = true;
-                break;
-            }
-        }
-        if (idPresentInList) {
-            newId = (long) transactionList.get(transactionList.size() - 1).getId() + 1;
-            System.out.println("Your given id [" + transaction.getId() + "] has been updated to - " + newId);
-        }
+//        for (Transaction t : transactionList) {
+//            if (t.getId() == transaction.getId()) {
+//                idPresentInList = true;
+//                break;
+//            }
+//        }
+
+//        if (idPresentInList) {
+//            newId = (long) transactionList.get(transactionList.size() - 1).getId() + 1;
+//            System.out.println("Your given id [" + transaction.getId() + "] has been updated to - " + newId);
+//        }
         transaction = Transaction.builder()
-                .id(newId)
                 .product(transaction.getProduct())
                 .transactionType(transaction.getTransactionType())
                 .amount(transaction.getAmount())
                 .build();
-        transactionList.add(transaction);
+        transactionRepository.save(transaction);
 
         return transaction;
     }
@@ -100,7 +106,7 @@ public class TransactionManager {
     public Transaction replaceTransactionWithId(Transaction transaction, long id) {
 
         Transaction existingTransaction = getTransactionById(id);
-        transactionList.remove(existingTransaction);
+        transactionRepository.delete(existingTransaction);
         transaction = Transaction.builder()
                 // se pastreaza ID-ul tranzactiei sterse, restul field-urilor
                 // putand fi modificate
@@ -109,14 +115,14 @@ public class TransactionManager {
                 .transactionType(transaction.getTransactionType())
                 .amount(transaction.getAmount())
                 .build();
-        transactionList.add(transaction);
+        transactionRepository.save(transaction);
         return transaction;
     }
 
     public Transaction deleteTransactionWithId(long id) {
 
         Transaction existingTransaction = getTransactionById(id);
-        transactionList.remove(existingTransaction);
+        transactionRepository.delete(existingTransaction);
 
         return existingTransaction;
     }
@@ -126,6 +132,8 @@ public class TransactionManager {
         Map<TransactionType, List<Transaction>> typeReport = new HashMap<>();
         List<Transaction> transactionsSell = new ArrayList<>();
         List<Transaction> transactionsBuy = new ArrayList<>();
+
+        List<Transaction> transactionList = (List<Transaction>) transactionRepository.findAll();
 
         for (Transaction t : transactionList) {
             if (t.getTransactionType() == TransactionType.SELL) {
@@ -146,6 +154,9 @@ public class TransactionManager {
 
         Map<String, List<Transaction>> typeReport = new HashMap<>();
         List<Transaction> transactionsOfProduct = new ArrayList<>();
+
+        List<Transaction> transactionList = (List<Transaction>) transactionRepository.findAll();
+
 
         for (Transaction t : transactionList) {
             if (t.getProduct().equalsIgnoreCase(product)) {
